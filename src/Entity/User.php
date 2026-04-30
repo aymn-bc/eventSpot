@@ -4,11 +4,13 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
+#[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -31,14 +33,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
-    #[ORM\Column(length: 50)]
-    private ?string $pseudo = null;
+
 
     #[ORM\ManyToOne(inversedBy: 'organisateur')]
     private ?Evenement $evenement = null;
 
     #[ORM\ManyToOne(inversedBy: 'participant')]
     private ?Inscription $inscription = null;
+
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $pseudo = null;
 
     public function getId(): ?int
     {

@@ -1,3 +1,12 @@
 body {
-    background-color: skyblue;
+    background: radial-gradient(circle at top, #eef2ff 0%, #f8fafc 60%, #e0f2fe 100%);
+}
+
+.auth-card {
+    border: none;
+    border-radius: 1rem;
+}
+
+.auth-card .card-body {
+    padding: 2.5rem;
 }
