@@ -70,8 +70,8 @@ class Evenement
     #[ORM\OneToMany(targetEntity: Inscription::class, mappedBy: 'evenement')]
     private Collection $inscriptions;
 
-    #[ORM\ManyToOne(inversedBy: 'evenements')]
-    private ?User $organisateur = null;
+    // #[ORM\ManyToOne(inversedBy: 'evenements')]
+    // private ?User $organisateur = null;
 
     /**
      * @var Collection<int, TagEvenemement>
@@ -79,10 +79,17 @@ class Evenement
     #[ORM\ManyToMany(targetEntity: TagEvenemement::class, inversedBy: 'evenements')]
     private Collection $tagEvenements;
 
+    /**
+     * @var Collection<int, User>
+     */
+    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'evenement')]
+    private Collection $organisateur;
+
     public function __construct()
     {
         $this->inscriptions = new ArrayCollection();
         $this->tagEvenements = new ArrayCollection();
+        $this->organisateur = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -264,18 +271,6 @@ class Evenement
         return $this;
     }
 
-    public function getOrganisateur(): ?User
-    {
-        return $this->organisateur;
-    }
-
-    public function setOrganisateur(?User $organisateur): static
-    {
-        $this->organisateur = $organisateur;
-
-        return $this;
-    }
-
     /**
      * @return Collection<int, TagEvenemement>
      */
@@ -296,6 +291,36 @@ class Evenement
     public function removeTagEvenement(TagEvenemement $tagEvenement): static
     {
         $this->tagEvenements->removeElement($tagEvenement);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getOrganisateur(): Collection
+    {
+        return $this->organisateur;
+    }
+
+    public function addOrganisateur(User $organisateur): static
+    {
+        if (!$this->organisateur->contains($organisateur)) {
+            $this->organisateur->add($organisateur);
+            $organisateur->setEvenement($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOrganisateur(User $organisateur): static
+    {
+        if ($this->organisateur->removeElement($organisateur)) {
+            // set the owning side to null (unless already changed)
+            if ($organisateur->getEvenement() === $this) {
+                $organisateur->setEvenement(null);
+            }
+        }
 
         return $this;
     }
