@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Entity;
 
 use App\Repository\TagEvenemementRepository;
@@ -11,22 +10,17 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: TagEvenemementRepository::class)]
 class TagEvenemement
 {
-
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[Assert\Unique(message: 'Le tag doit être unique.')]
-    #[Assert\NotBlank(message: 'Le titre ne peut pas être vide.')]
+    #[Assert\NotBlank(message: 'Le nom du tag ne peut pas être vide.')]
     #[ORM\Column(length: 50)]
     private ?string $nom = null;
 
     #[ORM\Column(length: 7)]
-    #[Assert\Regex(
-        pattern: "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$",
-        message: 'La couleur doit être un code hexadécimal valide commençant par #.'
-    )]
+    #[Assert\NotBlank(message: 'La couleur ne peut pas être vide.')]
     private ?string $couleur = null;
 
     /**
@@ -53,7 +47,6 @@ class TagEvenemement
     public function setNom(string $nom): static
     {
         $this->nom = $nom;
-
         return $this;
     }
 
@@ -65,7 +58,6 @@ class TagEvenemement
     public function setCouleur(string $couleur): static
     {
         $this->couleur = $couleur;
-
         return $this;
     }
 
@@ -83,7 +75,6 @@ class TagEvenemement
             $this->evenements->add($evenement);
             $evenement->addTagEvenement($this);
         }
-
         return $this;
     }
 
@@ -92,7 +83,6 @@ class TagEvenemement
         if ($this->evenements->removeElement($evenement)) {
             $evenement->removeTagEvenement($this);
         }
-
         return $this;
     }
 }

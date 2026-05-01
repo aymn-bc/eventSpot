@@ -20,21 +20,21 @@ class Evenement
     private ?int $id = null;
 
     #[Assert\NotBlank(message: 'Le titre ne peut pas être vide.')]
-    #[Assert\Length(min: 5,minMessage: 'Le titre doit contenir au moins {{ limit }} caractères.')]
+    #[Assert\Length(min: 5, minMessage: 'Le titre doit contenir au moins {{ limit }} caractères.')]
     #[ORM\Column(length: 255)]
     private ?string $titre = null;
 
     #[Assert\NotBlank(message: 'La description ne peut pas être vide.')]
-    #[Assert\Length(min: 30,minMessage: 'La description doit contenir au moins {{ limit }} caractères.')]
+    #[Assert\Length(min: 30, minMessage: 'La description doit contenir au moins {{ limit }} caractères.')]
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
 
     #[ORM\Column]
-    #[Assert\NotNull(message: 'La date de debut est obligatoire.')]
+    #[Assert\NotNull(message: 'La date de début est obligatoire.')]
     private ?\DateTime $dateDebut = null;
 
     #[ORM\Column]
-    #[Assert\NotNull(message: 'La date de debut est obligatoire.')]
+    #[Assert\NotNull(message: 'La date de fin est obligatoire.')]
     private ?\DateTime $dateFin = null;
 
     #[Assert\NotBlank(message: 'Le lieu ne peut pas être vide.')]
@@ -42,7 +42,7 @@ class Evenement
     private ?string $lieu = null;
 
     #[ORM\Column]
-    #[Assert\Range(min: 1, notInRangeMessage: "La capacité maximale doit être d'au moins {{ min }} personne.")] 
+    #[Assert\Range(min: 1, notInRangeMessage: "La capacité maximale doit être d'au moins {{ min }} personne.")]
     private ?int $capaciteMax = null;
 
     #[ORM\Column]
@@ -50,10 +50,10 @@ class Evenement
     private ?float $prix = null;
 
     #[ORM\Column(length: 30, enumType: Categorie::class)]
-    private ?string $categorie = null;
+    private ?Categorie $categorie = null;
 
     #[ORM\Column(length: 20, enumType: StatutEvent::class)]
-    private ?string $status = null;
+    private ?StatutEvent $status = null;
 
     #[ORM\Column]
     private ?\DateTime $dateCreation = null;
@@ -105,7 +105,6 @@ class Evenement
     public function setTitre(string $titre): static
     {
         $this->titre = $titre;
-
         return $this;
     }
 
@@ -117,7 +116,6 @@ class Evenement
     public function setDescription(string $description): static
     {
         $this->description = $description;
-
         return $this;
     }
 
@@ -129,7 +127,6 @@ class Evenement
     public function setDateDebut(\DateTime $dateDebut): static
     {
         $this->dateDebut = $dateDebut;
-
         return $this;
     }
 
@@ -141,7 +138,6 @@ class Evenement
     public function setDateFin(\DateTime $dateFin): static
     {
         $this->dateFin = $dateFin;
-
         return $this;
     }
 
@@ -153,7 +149,6 @@ class Evenement
     public function setLieu(string $lieu): static
     {
         $this->lieu = $lieu;
-
         return $this;
     }
 
@@ -165,7 +160,6 @@ class Evenement
     public function setCapaciteMax(int $capaciteMax): static
     {
         $this->capaciteMax = $capaciteMax;
-
         return $this;
     }
 
@@ -177,31 +171,28 @@ class Evenement
     public function setPrix(float $prix): static
     {
         $this->prix = $prix;
-
         return $this;
     }
 
-    public function getCategorie(): ?string
+    public function getCategorie(): ?Categorie
     {
         return $this->categorie;
     }
 
-    public function setCategorie(string $categorie): static
+    public function setCategorie(Categorie $categorie): static
     {
         $this->categorie = $categorie;
-
         return $this;
     }
 
-    public function getStatus(): ?string
+    public function getStatus(): ?StatutEvent
     {
         return $this->status;
     }
 
-    public function setStatus(string $status): static
+    public function setStatus(StatutEvent $status): static
     {
         $this->status = $status;
-
         return $this;
     }
 
@@ -213,7 +204,6 @@ class Evenement
     public function setDateCreation(): static
     {
         $this->dateCreation = new \DateTime();
-
         return $this;
     }
 
@@ -225,7 +215,6 @@ class Evenement
     public function setImageName(?string $imageName): static
     {
         $this->imageName = $imageName;
-
         return $this;
     }
 
@@ -237,7 +226,6 @@ class Evenement
     public function setLieuEvent(?Lieu $lieu_event): static
     {
         $this->lieu_event = $lieu_event;
-
         return $this;
     }
 
@@ -255,19 +243,16 @@ class Evenement
             $this->inscriptions->add($inscription);
             $inscription->setEvenement($this);
         }
-
         return $this;
     }
 
     public function removeInscription(Inscription $inscription): static
     {
         if ($this->inscriptions->removeElement($inscription)) {
-            // set the owning side to null (unless already changed)
             if ($inscription->getEvenement() === $this) {
                 $inscription->setEvenement(null);
             }
         }
-
         return $this;
     }
 
@@ -284,14 +269,12 @@ class Evenement
         if (!$this->tagEvenements->contains($tagEvenement)) {
             $this->tagEvenements->add($tagEvenement);
         }
-
         return $this;
     }
 
     public function removeTagEvenement(TagEvenemement $tagEvenement): static
     {
         $this->tagEvenements->removeElement($tagEvenement);
-
         return $this;
     }
 

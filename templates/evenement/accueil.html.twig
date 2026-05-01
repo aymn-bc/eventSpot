@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil - EventSpot{% endblock %}
+
+{% block body %}
+<div class="text-center mb-5">
+    <h1 class="display-4 fw-bold">🎯 Bienvenue sur EventSpot</h1>
+    <p class="lead text-muted">Découvrez les prochains événements</p>
+</div>
+
+<h2 class="mb-4">📅 Prochains événements</h2>
+
+{% if evenements is empty %}
+    <div class="alert alert-info">Aucun événement à venir pour le moment.</div>
+{% else %}
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for evenement in evenements %}
+    <div class="col">
+        <div class="card h-100 shadow-sm">
+            {% if evenement.imageName %}
+                <img src="{{ asset('uploads/images/' ~ evenement.imageName) }}" class="card-img-top" style="height:180px; object-fit:cover;">
+            {% else %}
+                <div class="bg-secondary text-white text-center py-5">Pas d'image</div>
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ evenement.titre }}</h5>
+                <p class="card-text text-muted small">{{ evenement.dateDebut|date('d/m/Y H:i') }}</p>
+                <p class="card-text">{{ evenement.description|slice(0, 100) }}...</p>
+            </div>
+            <div class="card-footer">
+                <a href="{{ path('app_evenements_detail', {id: evenement.id}) }}" class="btn btn-primary btn-sm">Voir détail</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="text-center mt-4">
+    <a href="{{ path('app_evenements_liste') }}" class="btn btn-outline-dark">Voir tous les événements</a>
+</div>
+{% endblock %}
