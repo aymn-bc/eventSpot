@@ -35,16 +35,7 @@ class EvenementController extends AbstractController
         ]);
     }
 
-    // Détail d'un événement
-    #[Route('/evenements/{id}', name: 'app_evenements_detail', methods: ['GET'])]
-    public function detail(Evenement $evenement): Response
-    {
-        return $this->render('evenement/detail.html.twig', [
-            'evenement' => $evenement,
-        ]);
-    }
-
-    // Créer un événement
+    // Créer un événement (AVANT detail !)
     #[Route('/evenements/nouveau', name: 'app_evenements_nouveau', methods: ['GET', 'POST'])]
     public function nouveau(Request $request, EntityManagerInterface $em): Response
     {
@@ -53,10 +44,9 @@ class EvenementController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Gestion image
             $imageFile = $form->get('imageFile')->getData();
             if ($imageFile) {
-                $newFilename = uniqid() . '.' . $imageFile->guessExtension();
+                $newFilename = uniqid() . '.' . $imageFile->getClientOriginalExtension();
                 $imageFile->move($this->getParameter('images_directory'), $newFilename);
                 $evenement->setImageName($newFilename);
             }
@@ -74,6 +64,15 @@ class EvenementController extends AbstractController
         ]);
     }
 
+    // Détail d'un événement
+    #[Route('/evenements/{id}', name: 'app_evenements_detail', methods: ['GET'])]
+    public function detail(Evenement $evenement): Response
+    {
+        return $this->render('evenement/detail.html.twig', [
+            'evenement' => $evenement,
+        ]);
+    }
+
     // Modifier un événement
     #[Route('/evenements/{id}/modifier', name: 'app_evenements_modifier', methods: ['GET', 'POST'])]
     public function modifier(Request $request, Evenement $evenement, EntityManagerInterface $em): Response
@@ -82,10 +81,9 @@ class EvenementController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Gestion image
             $imageFile = $form->get('imageFile')->getData();
             if ($imageFile) {
-                $newFilename = uniqid() . '.' . $imageFile->guessExtension();
+                $newFilename = uniqid() . '.' . $imageFile->getClientOriginalExtension();
                 $imageFile->move($this->getParameter('images_directory'), $newFilename);
                 $evenement->setImageName($newFilename);
             }

@@ -59,21 +59,21 @@ class EvenementType extends AbstractType
             ->add('categorie', ChoiceType::class, [
                 'label' => 'Catégorie',
                 'choices' => [
-                    '🎤 Conférence' => Categorie::CONFERENCE->value,
-                    '🔧 Atelier'    => Categorie::ATELIER->value,
-                    '👥 Meetup'     => Categorie::MEETUP->value,
-                    '📚 Formation'  => Categorie::FORMATION->value,
-                    '🎵 Concert'    => Categorie::CONCERT->value,
+                    '🎤 Conférence' => Categorie::CONFERENCE,
+                    '🔧 Atelier'    => Categorie::ATELIER,
+                    '👥 Meetup'     => Categorie::MEETUP,
+                    '📚 Formation'  => Categorie::FORMATION,
+                    '🎵 Concert'    => Categorie::CONCERT,
                 ],
                 'attr' => ['class' => 'form-select'],
             ])
             ->add('status', ChoiceType::class, [
                 'label' => 'Statut',
                 'choices' => [
-                    '📝 Brouillon' => StatutEvent::BROUILLON->value,
-                    '🟢 Publié'    => StatutEvent::PUBLIE->value,
-                    '🔴 Complet'   => StatutEvent::COMPLET->value,
-                    '⚫ Annulé'    => StatutEvent::ANNULE->value,
+                    '📝 Brouillon' => StatutEvent::BROUILLON,
+                    '🟢 Publié'    => StatutEvent::PUBLIE,
+                    '🔴 Complet'   => StatutEvent::COMPLET,
+                    '⚫ Annulé'    => StatutEvent::ANNULE,
                 ],
                 'attr' => ['class' => 'form-select'],
             ])
@@ -99,11 +99,11 @@ class EvenementType extends AbstractType
                 'mapped' => false,
                 'required' => false,
                 'constraints' => [
-                    new File([
-                        'maxSize' => '2M',
-                        'mimeTypes' => ['image/jpeg', 'image/png', 'image/webp'],
-                        'mimeTypesMessage' => 'Veuillez uploader une image JPEG, PNG ou WebP.',
-                    ]),
+                    new File(
+                        maxSize: '2M',
+                        mimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
+                        mimeTypesMessage: 'Veuillez uploader une image JPEG, PNG ou WebP.',
+                    ),
                 ],
                 'attr' => ['class' => 'form-control'],
             ])

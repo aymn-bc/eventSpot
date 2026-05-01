@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Entity;
 
 use App\Repository\LieuRepository;
@@ -17,7 +16,6 @@ class Lieu
     private ?int $id = null;
 
     #[Assert\NotBlank(message: 'Le nom ne peut pas être vide.')]
-    #[Assert\Unique(message: 'Le nom du lieu doit être unique.')]
     #[ORM\Column(length: 100)]
     private ?string $nom = null;
 
@@ -25,7 +23,7 @@ class Lieu
     #[ORM\Column(length: 255)]
     private ?string $adresse = null;
 
-    #[Assert\NotBlank(message: 'Le ville ne peut pas être vide.')]
+    #[Assert\NotBlank(message: 'La ville ne peut pas être vide.')]
     #[ORM\Column(length: 100)]
     private ?string $ville = null;
 
@@ -34,9 +32,9 @@ class Lieu
     private ?int $capacite = null;
 
     /**
-     * @var Collection<int, evenement>
+     * @var Collection<int, Evenement>
      */
-    #[ORM\OneToMany(targetEntity: evenement::class, mappedBy: 'lieu_event')]
+    #[ORM\OneToMany(targetEntity: Evenement::class, mappedBy: 'lieu_event')]
     private Collection $evenements;
 
     public function __construct()
@@ -57,7 +55,6 @@ class Lieu
     public function setNom(string $nom): static
     {
         $this->nom = $nom;
-
         return $this;
     }
 
@@ -69,7 +66,6 @@ class Lieu
     public function setAdresse(string $adresse): static
     {
         $this->adresse = $adresse;
-
         return $this;
     }
 
@@ -81,7 +77,6 @@ class Lieu
     public function setVille(string $ville): static
     {
         $this->ville = $ville;
-
         return $this;
     }
 
@@ -93,37 +88,33 @@ class Lieu
     public function setCapacite(int $capacite): static
     {
         $this->capacite = $capacite;
-
         return $this;
     }
 
     /**
-     * @return Collection<int, evenement>
+     * @return Collection<int, Evenement>
      */
     public function getEvenements(): Collection
     {
         return $this->evenements;
     }
 
-    public function addEvenement(evenement $evenement): static
+    public function addEvenement(Evenement $evenement): static
     {
         if (!$this->evenements->contains($evenement)) {
             $this->evenements->add($evenement);
             $evenement->setLieuEvent($this);
         }
-
         return $this;
     }
 
-    public function removeEvenement(evenement $evenement): static
+    public function removeEvenement(Evenement $evenement): static
     {
         if ($this->evenements->removeElement($evenement)) {
-            // set the owning side to null (unless already changed)
             if ($evenement->getLieuEvent() === $this) {
                 $evenement->setLieuEvent(null);
             }
         }
-
         return $this;
     }
 }
