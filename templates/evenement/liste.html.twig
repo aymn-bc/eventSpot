@@ -5,7 +5,9 @@
 {% block body %}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1>📋 Tous les événements</h1>
-    <a href="{{ path('app_evenements_nouveau') }}" class="btn btn-success">+ Nouvel événement</a>
+    {% if is_granted('ROLE_ORGANISATEUR') %}
+        <a href="{{ path('app_evenements_nouveau') }}" class="btn btn-success">+ Nouvel événement</a>
+    {% endif %}
 </div>
 
 {% if evenements is empty %}
@@ -67,11 +69,13 @@
             </td>
             <td>
                 <a href="{{ path('app_evenements_detail', {id: evenement.id}) }}" class="btn btn-sm btn-info">👁</a>
-                <a href="{{ path('app_evenements_modifier', {id: evenement.id}) }}" class="btn btn-sm btn-warning">✏️</a>
-                <form method="post" action="{{ path('app_evenements_supprimer', {id: evenement.id}) }}" style="display:inline" onsubmit="return confirm('Supprimer cet événement ?')">
-                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ evenement.id) }}">
-                    <button class="btn btn-sm btn-danger">🗑</button>
-                </form>
+                {% if is_granted('ROLE_ORGANISATEUR') %}
+                    <a href="{{ path('app_evenements_modifier', {id: evenement.id}) }}" class="btn btn-sm btn-warning">✏️</a>
+                    <form method="post" action="{{ path('app_evenements_supprimer', {id: evenement.id}) }}" style="display:inline" onsubmit="return confirm('Supprimer cet événement ?')">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ evenement.id) }}">
+                        <button class="btn btn-sm btn-danger">🗑</button>
+                    </form>
+                {% endif %}
             </td>
         </tr>
     {% endfor %}

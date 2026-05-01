@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class TagEvenementController extends AbstractController
 {
@@ -24,6 +25,7 @@ class TagEvenementController extends AbstractController
     }
 
     // Créer un tag
+    #[IsGranted('ROLE_ADMIN')]
     #[Route('/tags/nouveau', name: 'app_tags_nouveau', methods: ['GET', 'POST'])]
     public function nouveau(Request $request, EntityManagerInterface $em): Response
     {
@@ -45,6 +47,7 @@ class TagEvenementController extends AbstractController
     }
 
     // Supprimer un tag (CSRF)
+    #[IsGranted('ROLE_ADMIN')]
     #[Route('/tags/{id}/supprimer', name: 'app_tags_supprimer', methods: ['POST'])]
     public function supprimer(Request $request, TagEvenemement $tag, EntityManagerInterface $em): Response
     {

@@ -12,6 +12,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class EvenementController extends AbstractController
 {
@@ -36,6 +37,7 @@ class EvenementController extends AbstractController
     }
 
     // Créer un événement (AVANT detail !)
+    #[IsGranted('ROLE_ORGANISATEUR')]
     #[Route('/evenements/nouveau', name: 'app_evenements_nouveau', methods: ['GET', 'POST'])]
     public function nouveau(Request $request, EntityManagerInterface $em): Response
     {
@@ -74,6 +76,7 @@ class EvenementController extends AbstractController
     }
 
     // Modifier un événement
+    #[IsGranted('ROLE_ORGANISATEUR')]
     #[Route('/evenements/{id}/modifier', name: 'app_evenements_modifier', methods: ['GET', 'POST'])]
     public function modifier(Request $request, Evenement $evenement, EntityManagerInterface $em): Response
     {
@@ -101,6 +104,7 @@ class EvenementController extends AbstractController
     }
 
     // Supprimer un événement (CSRF)
+    #[IsGranted('ROLE_ORGANISATEUR')]
     #[Route('/evenements/{id}/supprimer', name: 'app_evenements_supprimer', methods: ['POST'])]
     public function supprimer(Request $request, Evenement $evenement, EntityManagerInterface $em): Response
     {
@@ -114,6 +118,7 @@ class EvenementController extends AbstractController
     }
 
     // S'inscrire à un événement
+    #[IsGranted('ROLE_USER')]
     #[Route('/evenements/{id}/inscription', name: 'app_evenements_inscription', methods: ['GET', 'POST'])]
     public function inscription(Request $request, Evenement $evenement, EntityManagerInterface $em): Response
     {

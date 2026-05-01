@@ -81,10 +81,16 @@
             {% if evenement.status == 'complet' %}
                 <button class="btn btn-secondary" disabled>🔴 Complet</button>
             {% else %}
-                <a href="{{ path('app_evenements_inscription', {id: evenement.id}) }}" class="btn btn-success btn-lg">✅ S'inscrire</a>
+                {% if is_granted('ROLE_USER') %}
+                    <a href="{{ path('app_evenements_inscription', {id: evenement.id}) }}" class="btn btn-success btn-lg">✅ S'inscrire</a>
+                {% else %}
+                    <a href="{{ path('app_login') }}" class="btn btn-outline-success btn-lg">Se connecter pour s'inscrire</a>
+                {% endif %}
             {% endif %}
 
-            <a href="{{ path('app_evenements_modifier', {id: evenement.id}) }}" class="btn btn-warning ms-2">✏️ Modifier</a>
+            {% if is_granted('ROLE_ORGANISATEUR') %}
+                <a href="{{ path('app_evenements_modifier', {id: evenement.id}) }}" class="btn btn-warning ms-2">✏️ Modifier</a>
+            {% endif %}
             <a href="{{ path('app_evenements_liste') }}" class="btn btn-outline-secondary ms-2">← Retour</a>
         </div>
     </div>

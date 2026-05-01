@@ -3,6 +3,12 @@ security:
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
 
+
+    role_hierarchy:
+        ROLE_ADMIN: ROLE_ORGANISATEUR
+        ROLE_ORGANISATEUR: ROLE_USER
+
+
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
         # used to reload user from session & other features (e.g. switch_user)
@@ -43,6 +49,14 @@ security:
     access_control:
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
+
+        - { path: ^/inscription, roles: ROLE_USER }
+        - { path: ^/evenements/nouveau, roles: ROLE_ORGANISATEUR }
+        - { path: ^/evenements/\d+/modifier, roles: ROLE_ORGANISATEUR }
+        - { path: ^/evenements/\d+/supprimer, roles: ROLE_ORGANISATEUR }
+        - { path: ^/lieux/nouveau, roles: ROLE_ADMIN }
+        - { path: ^/tags/nouveau, roles: ROLE_ADMIN }
+        - { path: ^/tags/^/supprimer, roles: ROLE_ADMIN }
 
 when@test:
     security:
