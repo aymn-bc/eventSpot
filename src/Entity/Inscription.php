@@ -34,12 +34,17 @@ class Inscription
     /**
      * @var Collection<int, User>
      */
-    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'inscriptions')]
-    private Collection $participants;
+    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'inscription')]
+    private Collection $participant;
+
+    /**
+     * @var Collection<int, User>
+     */
+    
 
     public function __construct()
     {
-        $this->participants = new ArrayCollection();
+        $this->participant = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -98,16 +103,16 @@ class Inscription
     /**
      * @return Collection<int, User>
      */
-    public function getParticipants(): Collection
+    public function getParticipant(): Collection
     {
-        return $this->participants;
+        return $this->participant;
     }
 
     public function addParticipant(User $participant): static
     {
-        if (!$this->participants->contains($participant)) {
-            $this->participants->add($participant);
-            $participant->setInscriptions($this);
+        if (!$this->participant->contains($participant)) {
+            $this->participant->add($participant);
+            $participant->setInscription($this);
         }
 
         return $this;
@@ -115,10 +120,10 @@ class Inscription
 
     public function removeParticipant(User $participant): static
     {
-        if ($this->participants->removeElement($participant)) {
+        if ($this->participant->removeElement($participant)) {
             // set the owning side to null (unless already changed)
-            if ($participant->getInscriptions() === $this) {
-                $participant->setInscriptions(null);
+            if ($participant->getInscription() === $this) {
+                $participant->setInscription(null);
             }
         }
 
