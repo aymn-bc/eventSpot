@@ -54,6 +54,7 @@ class EvenementController extends AbstractController
             }
 
             $evenement->setDateCreation();
+            $evenement->addOrganisateur($this->getUser());
             $em->persist($evenement);
             $em->flush();
 
@@ -89,6 +90,11 @@ class EvenementController extends AbstractController
                 $newFilename = uniqid() . '.' . $imageFile->getClientOriginalExtension();
                 $imageFile->move($this->getParameter('images_directory'), $newFilename);
                 $evenement->setImageName($newFilename);
+            }
+
+            // Ensure the current user is among the organizers if not already
+            if (!$evenement->getOrganisateur()->contains($this->getUser())) {
+                $evenement->addOrganisateur($this->getUser());
             }
 
             $em->flush();
