@@ -8,6 +8,39 @@
     <p class="lead text-muted">Découvrez les prochains événements</p>
 </div>
 
+{# Section des événements consultés récemment #}
+{% if latestEvents is not empty %}
+<div class="mb-5">
+    <h3 class="mb-3">📋 Derniers événements consultés</h3>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-5 g-3">
+        {% for event in latestEvents %}
+        <div class="col">
+            <div class="card h-100 shadow-sm border-info">
+                {% if event.imageName %}
+                    <img src="{{ asset('uploads/images/' ~ event.imageName) }}" class="card-img-top" style="height:120px; object-fit:cover;">
+                {% else %}
+                    <div class="bg-secondary text-white text-center py-3">Pas d'image</div>
+                {% endif %}
+                <div class="card-body">
+                    <h6 class="card-title">{{ event.titre }}</h6>
+                    <p class="card-text text-muted small">{{ event.dateDebut|date('d/m/Y') }}</p>
+                </div>
+                <div class="card-footer">
+                    <a href="{{ path('app_evenements_detail', {id: event.id}) }}" class="btn btn-sm btn-info w-100">Voir</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <hr>
+</div>
+{% else %}
+<div class="mb-5">
+    <h3 class="mb-3">📋 Derniers événements consultés</h3>
+    <div class="alert alert-secondary">Aucun événement n'a été consulté pour le moment.</div>
+</div>
+{% endif %}
+
 <h2 class="mb-4">📅 Prochains événements</h2>
 
 {% if evenements is empty %}

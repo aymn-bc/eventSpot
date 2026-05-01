@@ -2,9 +2,9 @@
 
 namespace App\Controller;
 
-use App\Entity\TagEvenemement;
+use App\Entity\TagEvenement;
 use App\Form\TagEvenementType;
-use App\Repository\TagEvenemementRepository;
+use App\Repository\TagEvenementRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,7 +16,7 @@ class TagEvenementController extends AbstractController
 {
     // Liste des tags
     #[Route('/tags', name: 'app_tags_liste', methods: ['GET'])]
-    public function liste(TagEvenemementRepository $repo): Response
+    public function liste(TagEvenementRepository $repo): Response
     {
         $tags = $repo->findAll();
         return $this->render('tag_evenement/liste.html.twig', [
@@ -29,7 +29,7 @@ class TagEvenementController extends AbstractController
     #[Route('/tags/nouveau', name: 'app_tags_nouveau', methods: ['GET', 'POST'])]
     public function nouveau(Request $request, EntityManagerInterface $em): Response
     {
-        $tag = new TagEvenemement();
+        $tag = new TagEvenement();
         $form = $this->createForm(TagEvenementType::class, $tag);
         $form->handleRequest($request);
 
@@ -49,7 +49,7 @@ class TagEvenementController extends AbstractController
     // Supprimer un tag (CSRF)
     #[IsGranted('ROLE_ADMIN')]
     #[Route('/tags/{id}/supprimer', name: 'app_tags_supprimer', methods: ['POST'])]
-    public function supprimer(Request $request, TagEvenemement $tag, EntityManagerInterface $em): Response
+    public function supprimer(Request $request, TagEvenement $tag, EntityManagerInterface $em): Response
     {
         if ($this->isCsrfTokenValid('delete' . $tag->getId(), $request->request->get('_token'))) {
             $em->remove($tag);

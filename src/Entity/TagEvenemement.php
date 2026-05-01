@@ -1,14 +1,14 @@
 <?php
 namespace App\Entity;
 
-use App\Repository\TagEvenemementRepository;
+use App\Repository\TagEvenementRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: TagEvenemementRepository::class)]
-class TagEvenemement
+#[ORM\Entity(repositoryClass: TagEvenementRepository::class)]
+class TagEvenement
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]

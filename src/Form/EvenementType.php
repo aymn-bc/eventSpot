@@ -4,7 +4,7 @@ namespace App\Form;
 
 use App\Entity\Evenement;
 use App\Entity\Lieu;
-use App\Entity\TagEvenemement;
+use App\Entity\TagEvenement;
 use App\Enum\Categorie;
 use App\Enum\StatutEvent;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -87,7 +87,7 @@ class EvenementType extends AbstractType
             ])
             ->add('tagEvenements', EntityType::class, [
                 'label' => 'Tags',
-                'class' => TagEvenemement::class,
+                'class' => TagEvenement::class,
                 'choice_label' => 'nom',
                 'multiple' => true,
                 'expanded' => true,

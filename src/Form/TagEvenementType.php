@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\Entity\TagEvenemement;
+use App\Entity\TagEvenement;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ColorType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -28,7 +28,7 @@ class TagEvenementType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => TagEvenemement::class,
+            'data_class' => TagEvenement::class,
         ]);
     }
 }

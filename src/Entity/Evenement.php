@@ -74,9 +74,9 @@ class Evenement
     // private ?User $organisateur = null;
 
     /**
-     * @var Collection<int, TagEvenemement>
+     * @var Collection<int, TagEvenement>
      */
-    #[ORM\ManyToMany(targetEntity: TagEvenemement::class, inversedBy: 'evenements')]
+    #[ORM\ManyToMany(targetEntity: TagEvenement::class, inversedBy: 'evenements')]
     private Collection $tagEvenements;
 
     /**
@@ -257,14 +257,14 @@ class Evenement
     }
 
     /**
-     * @return Collection<int, TagEvenemement>
+     * @return Collection<int, TagEvenement>
      */
     public function getTagEvenements(): Collection
     {
         return $this->tagEvenements;
     }
 
-    public function addTagEvenement(TagEvenemement $tagEvenement): static
+    public function addTagEvenement(TagEvenement $tagEvenement): static
     {
         if (!$this->tagEvenements->contains($tagEvenement)) {
             $this->tagEvenements->add($tagEvenement);
@@ -272,7 +272,7 @@ class Evenement
         return $this;
     }
 
-    public function removeTagEvenement(TagEvenemement $tagEvenement): static
+    public function removeTagEvenement(TagEvenement $tagEvenement): static
     {
         $this->tagEvenements->removeElement($tagEvenement);
         return $this;

@@ -18,21 +18,34 @@ class EvenementController extends AbstractController
 {
     // Page d'accueil : 6 prochains événements
     #[Route('/', name: 'app_accueil', methods: ['GET'])]
-    public function accueil(EvenementRepository $repo): Response
+    public function accueil(EvenementRepository $repo, Request $request): Response
     {
+        $session = $request->getSession();
+        $eventsId = $session->get('eventsId', []);
+        $latestEvents = $repo->findFiveById($eventsId);
+        
         $evenements = $repo->findProchains(6);
         return $this->render('evenement/accueil.html.twig', [
             'evenements' => $evenements,
+            'latestEvents' => $latestEvents,
         ]);
     }
 
     // Liste de tous les événements
     #[Route('/evenements', name: 'app_evenements_liste', methods: ['GET'])]
-    public function liste(EvenementRepository $repo): Response
+    public function liste(EvenementRepository $repo, Request $request): Response
     {
+        $session = $request->getSession();
+        $eventsId = $session->get('eventsId', []); 
+        $latestEventsId = [];
+        if ($eventsId){
+            $latestEventsId[] = array_slice($eventsId, 0, min(count($eventsId), 5));
+        }
+        $latestEvents = $repo->findFiveById($eventsId);
         $evenements = $repo->findAll();
         return $this->render('evenement/liste.html.twig', [
             'evenements' => $evenements,
+            'latestEvents' => $latestEvents
         ]);
     }
 
@@ -69,8 +82,17 @@ class EvenementController extends AbstractController
 
     // Détail d'un événement
     #[Route('/evenements/{id}', name: 'app_evenements_detail', methods: ['GET'])]
-    public function detail(Evenement $evenement): Response
+    public function detail(Evenement $evenement, Request $request): Response
     {
+        $session = $request->getSession();
+        $eventId = $evenement->getId();
+        $eventsId = $session->get('eventsId', []);
+
+        $key = array_search($eventId, $eventsId);
+        if ($key){
+            unset($eventsId[$key]);
+        }
+        $session->set('eventsId', [$eventId, ...$eventsId]);
         return $this->render('evenement/detail.html.twig', [
             'evenement' => $evenement,
         ]);
