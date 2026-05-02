@@ -24,7 +24,7 @@ class EvenementController extends AbstractController
         $eventsId = $session->get('eventsId', []);
         $latestEvents = $repo->findFiveById($eventsId);
         
-        $evenements = $repo->findProchains(6);
+        $evenements = $repo->findUpcoming(6);
         return $this->render('evenement/accueil.html.twig', [
             'evenements' => $evenements,
             'latestEvents' => $latestEvents,

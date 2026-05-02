@@ -104,8 +104,23 @@ class EvenementRepository extends ServiceEntityRepository
                   ->getQuery()->getResult();
     }
     
-    public function findUpcoming(int $limit = 6): array{
-        return [];
-    }  // prochains événements
+    /**
+     * Find upcoming published events ordered by start date
+     * 
+     * @param int $limit Maximum number of events to return
+     * @return array Array of upcoming Evenement objects
+     */
+    public function findUpcoming(int $limit = 6): array
+    {
+        return $this->createQueryBuilder('e')
+            ->where('e.dateDebut >= :now')
+            ->andWhere('e.status = :statut')
+            ->setParameter('now', new \DateTime())
+            ->setParameter('statut', 'publie')
+            ->orderBy('e.dateDebut', 'ASC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
 
 }
