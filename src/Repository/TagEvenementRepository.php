@@ -2,22 +2,22 @@
 
 namespace App\Repository;
 
-use App\Entity\TagEvenemement;
+use App\Entity\TagEvenement;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<TagEvenemement>
+ * @extends ServiceEntityRepository<TagEvenement>
  */
-class TagEvenemementRepository extends ServiceEntityRepository
+class TagEvenementRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, TagEvenemement::class);
+        parent::__construct($registry, TagEvenement::class);
     }
 
     //    /**
-    //     * @return TagEvenemement[] Returns an array of TagEvenemement objects
+    //     * @return TagEvenement[] Returns an array of TagEvenement objects
     //     */
     //    public function findByExampleField($value): array
     //    {
@@ -31,7 +31,7 @@ class TagEvenemementRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?TagEvenemement
+    //    public function findOneBySomeField($value): ?TagEvenement
     //    {
     //        return $this->createQueryBuilder('t')
     //            ->andWhere('t.exampleField = :val')

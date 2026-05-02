@@ -33,7 +33,7 @@
             </td>
             <td>
                 {% if is_granted('ROLE_ADMIN') %}
-                    <form method="post" action="{{ path('app_tags_supprimer', {id: tag.id}) }}" style="display:inline" onsubmit="return confirm('Supprimer ce tag ?')">
+                    <form method="post" action="{{ path('app_tags_supprimer', {id: tag.id}) }}" style="display:inline" class="js-delete">
                         <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ tag.id) }}">
                         <button class="btn btn-sm btn-danger">🗑 Supprimer</button>
                     </form>
