@@ -24,28 +24,28 @@
 
         {# Catégorie #}
         <p><strong>Catégorie :</strong>
-            {% if evenement.categorie == 'conference' %}
+            {% if evenement.categorie.value == 'conference' %}
                 <span class="badge bg-primary">🎤 Conférence</span>
-            {% elseif evenement.categorie == 'atelier' %}
+            {% elseif evenement.categorie.value == 'atelier' %}
                 <span class="badge bg-warning text-dark">🔧 Atelier</span>
-            {% elseif evenement.categorie == 'meetup' %}
+            {% elseif evenement.categorie.value == 'meetup' %}
                 <span class="badge bg-info text-dark">👥 Meetup</span>
-            {% elseif evenement.categorie == 'formation' %}
+            {% elseif evenement.categorie.value == 'formation' %}
                 <span class="badge bg-secondary">📚 Formation</span>
-            {% elseif evenement.categorie == 'concert' %}
+            {% elseif evenement.categorie.value == 'concert' %}
                 <span class="badge bg-danger">🎵 Concert</span>
             {% endif %}
         </p>
 
         {# Statut #}
         <p><strong>Statut :</strong>
-            {% if evenement.status == 'brouillon' %}
+            {% if evenement.status.value == 'brouillon' %}
                 <span class="badge bg-secondary">📝 Brouillon</span>
-            {% elseif evenement.status == 'publie' %}
+            {% elseif evenement.status.value == 'publie' %}
                 <span class="badge bg-success">🟢 Publié</span>
-            {% elseif evenement.status == 'complet' %}
+            {% elseif evenement.status.value == 'complet' %}
                 <span class="badge bg-danger">🔴 Complet</span>
-            {% elseif evenement.status == 'annule' %}
+            {% elseif evenement.status.value == 'annule' %}
                 <span class="badge bg-dark">⚫ Annulé</span>
             {% endif %}
         </p>
@@ -59,15 +59,16 @@
         </p>
         {% endif %}
 
-        {# Jauge de remplissage #}
-        {% set nbInscrits = evenement.inscriptions|length %}
-        {% set capacite = evenement.capaciteMax %}
-        {% set pourcentage = capacite > 0 ? ((nbInscrits / capacite) * 100)|round : 0 %}
+        {# Stats du service EvenementManager #}
+        <div class="mt-4 p-3 bg-light rounded">
+            <h5>📊 Statistiques</h5>
+            <p><strong>👥 Inscrits :</strong> {{ nbInscrits }} / {{ evenement.capaciteMax }}</p>
+            <p><strong>🪑 Places restantes :</strong> {{ placesRestantes }}</p>
 
-        <div class="mt-4">
-            <strong>🪑 Places :</strong> {{ nbInscrits }} / {{ capacite }}
+            {# Jauge de remplissage #}
+            {% set pourcentage = evenement.capaciteMax > 0 ? ((nbInscrits / evenement.capaciteMax) * 100)|round : 0 %}
             <div class="progress mt-2" style="height: 20px;">
-                <div class="progress-bar 
+                <div class="progress-bar
                     {% if pourcentage >= 100 %}bg-danger
                     {% elseif pourcentage >= 75 %}bg-warning
                     {% else %}bg-success{% endif %}"
@@ -78,14 +79,12 @@
         </div>
 
         <div class="mt-4">
-            {% if evenement.status == 'complet' %}
+            {% if evenement.status.value == 'complet' %}
                 <button class="btn btn-secondary" disabled>🔴 Complet</button>
+            {% elseif estInscrit %}
+                <button class="btn btn-secondary" disabled>✅ Déjà inscrit</button>
             {% else %}
-                {% if is_granted('ROLE_USER') %}
-                    <a href="{{ path('app_evenements_inscription', {id: evenement.id}) }}" class="btn btn-success btn-lg">✅ S'inscrire</a>
-                {% else %}
-                    <a href="{{ path('app_login') }}" class="btn btn-outline-success btn-lg">Se connecter pour s'inscrire</a>
-                {% endif %}
+                <a href="{{ path('app_evenements_inscription', {id: evenement.id}) }}" class="btn btn-success btn-lg">✅ S'inscrire</a>
             {% endif %}
 
             {% if is_granted('ROLE_ORGANISATEUR') %}

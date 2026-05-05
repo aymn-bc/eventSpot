@@ -2,6 +2,12 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
+use ApiPlatform\Metadata\Delete;
 use App\Enum\Categorie;
 use App\Enum\StatutEvent;
 use App\Repository\EvenementRepository;
@@ -9,49 +15,71 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[ApiResource(
+    normalizationContext: ['groups' => ['event:read']],
+    denormalizationContext: ['groups' => ['event:write']],
+    operations: [
+        new Get(),
+        new GetCollection(),
+        new Post(),
+        new Put(),
+        new Delete(),
+    ]
+)]
 #[ORM\Entity(repositoryClass: EvenementRepository::class)]
 class Evenement
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['event:read'])]
     private ?int $id = null;
 
+    #[Groups(['event:read', 'event:write'])]
     #[Assert\NotBlank(message: 'Le titre ne peut pas être vide.')]
     #[Assert\Length(min: 5, minMessage: 'Le titre doit contenir au moins {{ limit }} caractères.')]
     #[ORM\Column(length: 255)]
     private ?string $titre = null;
 
+    #[Groups(['event:read', 'event:write'])]
     #[Assert\NotBlank(message: 'La description ne peut pas être vide.')]
     #[Assert\Length(min: 30, minMessage: 'La description doit contenir au moins {{ limit }} caractères.')]
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
 
+    #[Groups(['event:read', 'event:write'])]
     #[ORM\Column]
     #[Assert\NotNull(message: 'La date de début est obligatoire.')]
     private ?\DateTime $dateDebut = null;
 
+    #[Groups(['event:read', 'event:write'])]
     #[ORM\Column]
     #[Assert\NotNull(message: 'La date de fin est obligatoire.')]
     private ?\DateTime $dateFin = null;
 
+    #[Groups(['event:read'])]
     #[Assert\NotBlank(message: 'Le lieu ne peut pas être vide.')]
     #[ORM\Column(length: 255)]
     private ?string $lieu = null;
 
+    #[Groups(['event:read', 'event:write'])]
     #[ORM\Column]
     #[Assert\Range(min: 1, notInRangeMessage: "La capacité maximale doit être d'au moins {{ min }} personne.")]
     private ?int $capaciteMax = null;
 
+    #[Groups(['event:read', 'event:write'])]
     #[ORM\Column]
     #[Assert\PositiveOrZero(message: "Le prix ne peut pas être négatif.")]
     private ?float $prix = null;
 
+    #[Groups(['event:read', 'event:write'])]
     #[ORM\Column(length: 30, enumType: Categorie::class)]
     private ?Categorie $categorie = null;
 
+    #[Groups(['event:read'])]
     #[ORM\Column(length: 20, enumType: StatutEvent::class)]
     private ?StatutEvent $status = null;
 
@@ -61,6 +89,7 @@ class Evenement
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $imageName = null;
 
+    #[Groups(['event:read'])]
     #[ORM\ManyToOne(inversedBy: 'evenements')]
     private ?Lieu $lieu_event = null;
 
@@ -70,20 +99,15 @@ class Evenement
     #[ORM\OneToMany(targetEntity: Inscription::class, mappedBy: 'evenement')]
     private Collection $inscriptions;
 
-    // #[ORM\ManyToOne(inversedBy: 'evenements')]
-    // private ?User $organisateur = null;
+    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'evenement')]
+    private Collection $organisateur;
 
     /**
      * @var Collection<int, TagEvenement>
      */
+    #[Groups(['event:read'])]
     #[ORM\ManyToMany(targetEntity: TagEvenement::class, inversedBy: 'evenements')]
     private Collection $tagEvenements;
-
-    /**
-     * @var Collection<int, User>
-     */
-    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'evenement')]
-    private Collection $organisateur;
 
     public function __construct()
     {
@@ -229,9 +253,6 @@ class Evenement
         return $this;
     }
 
-    /**
-     * @return Collection<int, Inscription>
-     */
     public function getInscriptions(): Collection
     {
         return $this->inscriptions;
@@ -256,9 +277,17 @@ class Evenement
         return $this;
     }
 
-    /**
-     * @return Collection<int, TagEvenement>
-     */
+    public function getOrganisateur(): ?User
+    {
+        return $this->organisateur;
+    }
+
+    public function setOrganisateur(?User $organisateur): static
+    {
+        $this->organisateur = $organisateur;
+        return $this;
+    }
+
     public function getTagEvenements(): Collection
     {
         return $this->tagEvenements;
@@ -275,36 +304,6 @@ class Evenement
     public function removeTagEvenement(TagEvenement $tagEvenement): static
     {
         $this->tagEvenements->removeElement($tagEvenement);
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, User>
-     */
-    public function getOrganisateur(): Collection
-    {
-        return $this->organisateur;
-    }
-
-    public function addOrganisateur(User $organisateur): static
-    {
-        if (!$this->organisateur->contains($organisateur)) {
-            $this->organisateur->add($organisateur);
-            $organisateur->setEvenement($this);
-        }
-
-        return $this;
-    }
-
-    public function removeOrganisateur(User $organisateur): static
-    {
-        if ($this->organisateur->removeElement($organisateur)) {
-            // set the owning side to null (unless already changed)
-            if ($organisateur->getEvenement() === $this) {
-                $organisateur->setEvenement(null);
-            }
-        }
-
         return $this;
     }
 }
