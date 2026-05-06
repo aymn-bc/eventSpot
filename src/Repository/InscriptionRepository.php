@@ -3,6 +3,8 @@
 namespace App\Repository;
 
 use App\Entity\Inscription;
+use App\Entity\Evenement;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -40,4 +42,25 @@ class InscriptionRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+    public function findByEvenementAndUser(Evenement $evenement, User $user): ?Inscription
+    {
+        return $this->createQueryBuilder('i')
+            ->where('i.evenement = :evenement')
+            ->andWhere('i.user = :user')
+            ->setParameter('evenement', $evenement)
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    public function countByEvenement(Evenement $evenement): int
+    {
+        return (int) $this->createQueryBuilder('i')
+            ->select('COUNT(i.id)')
+            ->where('i.evenement = :evenement')
+            ->setParameter('evenement', $evenement)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }

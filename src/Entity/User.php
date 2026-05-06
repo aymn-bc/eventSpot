@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -33,16 +35,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
+    /**
+     * @var Collection<int, Evenement>
+     */
+    #[ORM\OneToMany(targetEntity: Evenement::class, mappedBy: 'organisateur')]
+    private Collection $evenementsOrganises;
 
-
-    #[ORM\ManyToOne(inversedBy: 'organisateur')]
-    private ?Evenement $evenement = null;
-
-    #[ORM\ManyToOne(inversedBy: 'participant')]
-    private ?Inscription $inscription = null;
+    /**
+     * @var Collection<int, Inscription>
+     */
+    #[ORM\OneToMany(targetEntity: Inscription::class, mappedBy: 'user')]
+    private Collection $inscriptions;
 
     #[ORM\Column(length: 50, nullable: true)]
     private ?string $pseudo = null;
+
+    public function __construct()
+    {
+        $this->evenementsOrganises = new ArrayCollection();
+        $this->inscriptions = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -131,26 +143,60 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getEvenement(): ?Evenement
+    /**
+     * @return Collection<int, Evenement>
+     */
+    public function getEvenementsOrganises(): Collection
     {
-        return $this->evenement;
+        return $this->evenementsOrganises;
     }
 
-    public function setEvenement(?Evenement $evenement): static
+    public function addEvenementOrganise(Evenement $evenementOrganise): static
     {
-        $this->evenement = $evenement;
+        if (!$this->evenementsOrganises->contains($evenementOrganise)) {
+            $this->evenementsOrganises->add($evenementOrganise);
+            $evenementOrganise->setOrganisateur($this);
+        }
 
         return $this;
     }
 
-    public function getInscription(): ?Inscription
+    public function removeEvenementOrganise(Evenement $evenementOrganise): static
     {
-        return $this->inscription;
+        if ($this->evenementsOrganises->removeElement($evenementOrganise)) {
+            if ($evenementOrganise->getOrganisateur() === $this) {
+                $evenementOrganise->setOrganisateur(null);
+            }
+        }
+
+        return $this;
     }
 
-    public function setInscription(?Inscription $inscription): static
+    /**
+     * @return Collection<int, Inscription>
+     */
+    public function getInscriptions(): Collection
     {
-        $this->inscription = $inscription;
+        return $this->inscriptions;
+    }
+
+    public function addInscription(Inscription $inscription): static
+    {
+        if (!$this->inscriptions->contains($inscription)) {
+            $this->inscriptions->add($inscription);
+            $inscription->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInscription(Inscription $inscription): static
+    {
+        if ($this->inscriptions->removeElement($inscription)) {
+            if ($inscription->getUser() === $this) {
+                $inscription->setUser(null);
+            }
+        }
 
         return $this;
     }

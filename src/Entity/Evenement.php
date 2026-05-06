@@ -15,7 +15,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource(
@@ -99,8 +99,8 @@ class Evenement
     #[ORM\OneToMany(targetEntity: Inscription::class, mappedBy: 'evenement')]
     private Collection $inscriptions;
 
-    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'evenement')]
-    private Collection $organisateur;
+    #[ORM\ManyToOne(inversedBy: 'evenementsOrganises')]
+    private ?User $organisateur = null;
 
     /**
      * @var Collection<int, TagEvenement>
@@ -113,7 +113,6 @@ class Evenement
     {
         $this->inscriptions = new ArrayCollection();
         $this->tagEvenements = new ArrayCollection();
-        $this->organisateur = new ArrayCollection();
     }
 
     public function getId(): ?int

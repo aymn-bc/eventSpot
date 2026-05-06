@@ -123,4 +123,11 @@ class EvenementRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function findAll(): array
+    {
+        return $this->createQueryBuilder('e')
+            ->orderBy('e.dateDebut', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }
