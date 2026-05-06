@@ -7,6 +7,7 @@ use App\Entity\Inscription;
 use App\Form\EvenementType;
 use App\Form\InscriptionType;
 use App\Repository\EvenementRepository;
+use App\Service\EvenementManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,6 +17,10 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class EvenementController extends AbstractController
 {
+    public function __construct(
+        private EvenementManager $evenementManager
+    ) {}
+
     // Page d'accueil : 6 prochains événements
     #[Route('/', name: 'app_accueil', methods: ['GET'])]
     public function accueil(EvenementRepository $repo, Request $request): Response
@@ -23,11 +28,13 @@ class EvenementController extends AbstractController
         $session = $request->getSession();
         $eventsId = $session->get('eventsId', []);
         $latestEvents = $repo->findFiveById($eventsId);
-        
         $evenements = $repo->findUpcoming(6);
+        $evenementsParCategorie = $this->evenementManager->getEvenementsParCategorie();
+
         return $this->render('evenement/accueil.html.twig', [
             'evenements' => $evenements,
             'latestEvents' => $latestEvents,
+            'evenementsParCategorie' => $evenementsParCategorie,
         ]);
     }
 
@@ -36,13 +43,13 @@ class EvenementController extends AbstractController
     public function liste(EvenementRepository $repo, Request $request): Response
     {
         $session = $request->getSession();
-        $eventsId = $session->get('eventsId', []); 
-        
+        $eventsId = $session->get('eventsId', []);
         $latestEvents = $repo->findFiveById($eventsId);
         $evenements = $repo->findAll();
+
         return $this->render('evenement/liste.html.twig', [
             'evenements' => $evenements,
-            'latestEvents' => $latestEvents
+            'latestEvents' => $latestEvents,
         ]);
     }
 
@@ -64,7 +71,7 @@ class EvenementController extends AbstractController
             }
 
             $evenement->setDateCreation();
-            $evenement->addOrganisateur($this->getUser());
+            $evenement->setOrganisateur($this->getUser());
             $em->persist($evenement);
             $em->flush();
 
@@ -86,12 +93,16 @@ class EvenementController extends AbstractController
         $eventsId = $session->get('eventsId', []);
 
         $key = array_search($eventId, $eventsId);
-        if ($key){
+        if ($key !== false) {
             unset($eventsId[$key]);
         }
         $session->set('eventsId', [$eventId, ...$eventsId]);
+
         return $this->render('evenement/detail.html.twig', [
             'evenement' => $evenement,
+            'nbInscrits' => $this->evenementManager->getNbInscrits($evenement),
+            'placesRestantes' => $this->evenementManager->getPlacesRestantes($evenement),
+            'estInscrit' => $this->getUser() ? $this->evenementManager->estInscrit($this->getUser(), $evenement) : false,
         ]);
     }
 
@@ -111,9 +122,8 @@ class EvenementController extends AbstractController
                 $evenement->setImageName($newFilename);
             }
 
-            // Ensure the current user is among the organizers if not already
-            if (!$evenement->getOrganisateur()->contains($this->getUser())) {
-                $evenement->addOrganisateur($this->getUser());
+            if (!$evenement->getOrganisateur()) {
+                $evenement->setOrganisateur($this->getUser());
             }
 
             $em->flush();

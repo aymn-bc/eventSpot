@@ -1,14 +1,12 @@
 {% extends 'base.html.twig' %}
-
 {% block title %}Accueil - EventSpot{% endblock %}
-
 {% block body %}
 <div class="text-center mb-5">
     <h1 class="display-4 fw-bold">🎯 Bienvenue sur EventSpot</h1>
     <p class="lead text-muted">Découvrez les prochains événements</p>
 </div>
 
-{# Section des événements consultés récemment #}
+{# Derniers événements consultés #}
 {% if latestEvents is not empty %}
 <div class="mb-5">
     <h3 class="mb-3">📋 Derniers événements consultés</h3>
@@ -41,8 +39,8 @@
 </div>
 {% endif %}
 
+{# Prochains événements #}
 <h2 class="mb-4">📅 Prochains événements</h2>
-
 {% if evenements is empty %}
     <div class="alert alert-info">Aucun événement à venir pour le moment.</div>
 {% else %}
@@ -63,6 +61,40 @@
             <div class="card-footer">
                 <a href="{{ path('app_evenements_detail', {id: evenement.id}) }}" class="btn btn-primary btn-sm">Voir détail</a>
             </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{# Événements par catégorie (service EvenementManager) #}
+{% if evenementsParCategorie is not empty %}
+<div class="mt-5">
+    <h2 class="mb-4">📂 Événements par catégorie</h2>
+    {% for categorie, events in evenementsParCategorie %}
+    <div class="mb-4">
+        <h4>
+            {% if categorie == 'conference' %}🎤 Conférence
+            {% elseif categorie == 'atelier' %}🔧 Atelier
+            {% elseif categorie == 'meetup' %}👥 Meetup
+            {% elseif categorie == 'formation' %}📚 Formation
+            {% elseif categorie == 'concert' %}🎵 Concert
+            {% else %}📌 {{ categorie }}
+            {% endif %}
+            <span class="badge bg-secondary">{{ events|length }}</span>
+        </h4>
+        <div class="row row-cols-1 row-cols-md-3 g-3">
+            {% for event in events %}
+            <div class="col">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h6 class="card-title">{{ event.titre }}</h6>
+                        <p class="card-text text-muted small">{{ event.dateDebut|date('d/m/Y') }}</p>
+                        <a href="{{ path('app_evenements_detail', {id: event.id}) }}" class="btn btn-sm btn-outline-primary">Voir</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
         </div>
     </div>
     {% endfor %}

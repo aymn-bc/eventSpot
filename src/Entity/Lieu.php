@@ -1,32 +1,56 @@
 <?php
+
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
+use ApiPlatform\Metadata\Delete;
 use App\Repository\LieuRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[ApiResource(
+    normalizationContext: ['groups' => ['lieu:read']],
+    denormalizationContext: ['groups' => ['lieu:write']],
+    operations: [
+        new Get(),
+        new GetCollection(),
+        new Post(),
+        new Put(),
+        new Delete(),
+    ]
+)]
 #[ORM\Entity(repositoryClass: LieuRepository::class)]
 class Lieu
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['lieu:read', 'event:read'])]
     private ?int $id = null;
 
+    #[Groups(['lieu:read', 'lieu:write', 'event:read'])]
     #[Assert\NotBlank(message: 'Le nom ne peut pas être vide.')]
     #[ORM\Column(length: 100)]
     private ?string $nom = null;
 
+    #[Groups(['lieu:read', 'lieu:write'])]
     #[Assert\NotBlank(message: "L'adresse ne peut pas être vide.")]
     #[ORM\Column(length: 255)]
     private ?string $adresse = null;
 
+    #[Groups(['lieu:read', 'lieu:write', 'event:read'])]
     #[Assert\NotBlank(message: 'La ville ne peut pas être vide.')]
     #[ORM\Column(length: 100)]
     private ?string $ville = null;
 
+    #[Groups(['lieu:read', 'lieu:write'])]
     #[ORM\Column]
     #[Assert\Positive(message: 'La capacité doit être un entier positif.')]
     private ?int $capacite = null;
@@ -91,9 +115,6 @@ class Lieu
         return $this;
     }
 
-    /**
-     * @return Collection<int, Evenement>
-     */
     public function getEvenements(): Collection
     {
         return $this->evenements;
