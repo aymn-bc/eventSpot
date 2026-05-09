@@ -22,9 +22,9 @@ class Inscription
     private ?\DateTime $dateInscription = null;
 
     #[ORM\Column(length: 15, enumType: StatutInscription::class)]
-    private ?string $status = null;
+    private ?StatutInscription $status = null;
 
-    #[Assert\Length(max: 500,maxMessage: 'Le commentaire ne peut pas depasser {{ limit }} caractères.')]
+    #[Assert\Length(max: 500, maxMessage: 'Le commentaire ne peut pas dépasser {{ limit }} caractères.')]
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $commentaire = null;
 
@@ -36,11 +36,6 @@ class Inscription
      */
     #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'inscription')]
     private Collection $participant;
-
-    /**
-     * @var Collection<int, User>
-     */
-    
 
     public function __construct()
     {
@@ -60,19 +55,17 @@ class Inscription
     public function setDateInscription(): static
     {
         $this->dateInscription = new \DateTime();
-
         return $this;
     }
 
-    public function getStatus(): ?string
+    public function getStatus(): ?StatutInscription
     {
         return $this->status;
     }
 
-    public function setStatus(string $status): static
+    public function setStatus(StatutInscription $status): static
     {
         $this->status = $status;
-
         return $this;
     }
 
@@ -84,7 +77,6 @@ class Inscription
     public function setCommentaire(?string $commentaire): static
     {
         $this->commentaire = $commentaire;
-
         return $this;
     }
 
@@ -96,13 +88,9 @@ class Inscription
     public function setEvenement(?Evenement $evenement): static
     {
         $this->evenement = $evenement;
-
         return $this;
     }
 
-    /**
-     * @return Collection<int, User>
-     */
     public function getParticipant(): Collection
     {
         return $this->participant;
@@ -114,19 +102,16 @@ class Inscription
             $this->participant->add($participant);
             $participant->setInscription($this);
         }
-
         return $this;
     }
 
     public function removeParticipant(User $participant): static
     {
         if ($this->participant->removeElement($participant)) {
-            // set the owning side to null (unless already changed)
             if ($participant->getInscription() === $this) {
                 $participant->setInscription(null);
             }
         }
-
         return $this;
     }
 }
