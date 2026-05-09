@@ -99,8 +99,8 @@ class Evenement
     #[ORM\OneToMany(targetEntity: Inscription::class, mappedBy: 'evenement')]
     private Collection $inscriptions;
 
-    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'evenement')]
-    private Collection $organisateur;
+    #[ORM\ManyToOne]
+    private ?User $organisateur = null;
 
     /**
      * @var Collection<int, TagEvenement>
@@ -113,7 +113,6 @@ class Evenement
     {
         $this->inscriptions = new ArrayCollection();
         $this->tagEvenements = new ArrayCollection();
-        $this->organisateur = new ArrayCollection();
     }
 
     public function getId(): ?int

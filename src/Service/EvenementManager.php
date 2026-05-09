@@ -22,10 +22,13 @@ class EvenementManager
 
     public function estInscrit(User $u, Evenement $e): bool
     {
-        return (bool) $this->inscRepo->findOneBy([
-            'evenement' => $e,
-            'user' => $u,
-        ]);
+        $inscriptions = $this->inscRepo->findBy(['evenement' => $e]);
+        foreach ($inscriptions as $inscription) {
+            if ($inscription->getParticipant()->contains($u)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public function getNbInscrits(Evenement $e): int

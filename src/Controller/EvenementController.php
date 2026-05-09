@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Evenement;
 use App\Entity\Inscription;
+use App\Enum\StatutInscription;
 use App\Form\EvenementType;
 use App\Form\InscriptionType;
 use App\Repository\EvenementRepository;
@@ -12,6 +13,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -155,7 +158,7 @@ class EvenementController extends AbstractController
     // S'inscrire à un événement
     #[IsGranted('ROLE_USER')]
     #[Route('/evenements/{id}/inscription', name: 'app_evenements_inscription', methods: ['GET', 'POST'])]
-    public function inscription(Request $request, Evenement $evenement, EntityManagerInterface $em): Response
+    public function inscription(Request $request, Evenement $evenement, EntityManagerInterface $em, MailerInterface $mailer): Response
     {
         $inscription = new Inscription();
         $form = $this->createForm(InscriptionType::class, $inscription);
@@ -163,10 +166,29 @@ class EvenementController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $inscription->setEvenement($evenement);
+            $inscription->setDateInscription();
+            $inscription->setStatus(StatutInscription::CONFIRMEE);
             $em->persist($inscription);
             $em->flush();
 
-            $this->addFlash('success', 'Inscription réussie !');
+            // Envoi email de confirmation
+            $user = $this->getUser();
+            $email = (new Email())
+                ->from('noreply@eventspot.com')
+                ->to($user->getUserIdentifier())
+                ->subject('🎫 Inscription confirmée : ' . $evenement->getTitre())
+                ->html(
+                    $this->renderView('emails/confirmation_inscription.html.twig', [
+                        'titre' => $evenement->getTitre(),
+                        'dateDebut' => $evenement->getDateDebut()->format('d/m/Y H:i'),
+                        'lieu' => $evenement->getLieu(),
+                        'participant' => $user->getUserIdentifier(),
+                    ])
+                );
+
+            $mailer->send($email);
+
+            $this->addFlash('success', 'Inscription réussie ! Un email de confirmation vous a été envoyé.');
             return $this->redirectToRoute('app_evenements_detail', ['id' => $evenement->getId()]);
         }
 

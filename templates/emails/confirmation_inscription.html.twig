@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; }
+        .container { background: white; padding: 30px; border-radius: 8px; max-width: 600px; margin: auto; }
+        .header { background-color: #198754; color: white; padding: 20px; border-radius: 8px 8px 0 0; text-align: center; }
+        .content { padding: 20px; }
+        .footer { text-align: center; color: #999; font-size: 12px; margin-top: 20px; }
+        .badge { background-color: #198754; color: white; padding: 5px 10px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎫 Inscription confirmée !</h1>
+        </div>
+        <div class="content">
+            <p>Bonjour <strong>{{ participant }}</strong>,</p>
+            <p>Votre inscription à l'événement suivant a bien été enregistrée :</p>
+
+            <table style="width:100%; border-collapse: collapse; margin-top: 15px;">
+                <tr style="background:#f8f9fa;">
+                    <td style="padding:10px; border:1px solid #dee2e6;"><strong>📌 Événement</strong></td>
+                    <td style="padding:10px; border:1px solid #dee2e6;">{{ titre }}</td>
+                </tr>
+                <tr>
+                    <td style="padding:10px; border:1px solid #dee2e6;"><strong>📅 Date</strong></td>
+                    <td style="padding:10px; border:1px solid #dee2e6;">{{ dateDebut }}</td>
+                </tr>
+                <tr style="background:#f8f9fa;">
+                    <td style="padding:10px; border:1px solid #dee2e6;"><strong>📍 Lieu</strong></td>
+                    <td style="padding:10px; border:1px solid #dee2e6;">{{ lieu }}</td>
+                </tr>
+            </table>
+
+            <p style="margin-top: 20px;">Merci de votre inscription. À bientôt !</p>
+            <p><span class="badge">🎯 EventSpot</span></p>
+        </div>
+        <div class="footer">
+            <p>© 2026 EventSpot — Tous droits réservés</p>
+            <p>Cet email a été envoyé automatiquement, merci de ne pas y répondre.</p>
+        </div>
+    </div>
+</body>
+</html>
