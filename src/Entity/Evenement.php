@@ -93,18 +93,12 @@ class Evenement
     #[ORM\ManyToOne(inversedBy: 'evenements')]
     private ?Lieu $lieu_event = null;
 
-    /**
-     * @var Collection<int, Inscription>
-     */
     #[ORM\OneToMany(targetEntity: Inscription::class, mappedBy: 'evenement')]
     private Collection $inscriptions;
 
     #[ORM\ManyToOne]
     private ?User $organisateur = null;
 
-    /**
-     * @var Collection<int, TagEvenement>
-     */
     #[Groups(['event:read'])]
     #[ORM\ManyToMany(targetEntity: TagEvenement::class, inversedBy: 'evenements')]
     private Collection $tagEvenements;

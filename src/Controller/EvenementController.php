@@ -17,6 +17,7 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Knp\Component\Pager\PaginatorInterface;
 
 class EvenementController extends AbstractController
 {
@@ -41,21 +42,29 @@ class EvenementController extends AbstractController
         ]);
     }
 
-    // Liste de tous les événements
+        // Liste de tous les événements
     #[Route('/evenements', name: 'app_evenements_liste', methods: ['GET'])]
-    public function liste(EvenementRepository $repo, Request $request): Response
+    public function liste(EvenementRepository $repo, Request $request, PaginatorInterface $paginator): Response
     {
         $session = $request->getSession();
         $eventsId = $session->get('eventsId', []);
         $latestEvents = $repo->findFiveById($eventsId);
-        $evenements = $repo->findAll();
+
+        $query = $repo->createQueryBuilder('e')
+            ->orderBy('e.dateDebut', 'ASC')
+            ->getQuery();
+
+        $evenements = $paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1),
+            9
+        );
 
         return $this->render('evenement/liste.html.twig', [
             'evenements' => $evenements,
             'latestEvents' => $latestEvents,
         ]);
     }
-
     // Créer un événement (AVANT detail !)
     #[IsGranted('ROLE_ORGANISATEUR')]
     #[Route('/evenements/nouveau', name: 'app_evenements_nouveau', methods: ['GET', 'POST'])]

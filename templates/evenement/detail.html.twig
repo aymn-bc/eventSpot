@@ -20,7 +20,7 @@
         <hr>
 
         <p><strong>📍 Lieu :</strong> {{ evenement.lieu }}</p>
-        <p><strong>💰 Prix :</strong> {{ evenement.prix }} €</p>
+        <p><strong>💰 Prix :</strong> {{ evenement.prix|price_format }}</p>
 
         {# Catégorie #}
         <p><strong>Catégorie :</strong>
@@ -62,8 +62,9 @@
         {# Stats du service EvenementManager #}
         <div class="mt-4 p-3 bg-light rounded">
             <h5>📊 Statistiques</h5>
-            <p><strong>👥 Inscrits :</strong> {{ nbInscrits }} / {{ evenement.capaciteMax }}</p>
+            <p><strong>👥 Inscrits :</strong> {{ nbInscrits }} / {{ evenement.capaciteMax }} {{ capacity_badge(nbInscrits, evenement.capaciteMax) }}</p>
             <p><strong>🪑 Places restantes :</strong> {{ placesRestantes }}</p>
+            <p class="text-muted small">🕐 Créé {{ evenement.dateCreation|time_ago }}</p>
 
             {# Jauge de remplissage #}
             {% set pourcentage = evenement.capaciteMax > 0 ? ((nbInscrits / evenement.capaciteMax) * 100)|round : 0 %}

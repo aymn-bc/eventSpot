@@ -91,9 +91,6 @@ class Inscription
         return $this;
     }
 
-    /**
-     * @return Collection<int, User>
-     */
     public function getParticipant(): Collection
     {
         return $this->participant;
