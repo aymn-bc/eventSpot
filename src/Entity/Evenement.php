@@ -30,6 +30,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ]
 )]
 #[ORM\Entity(repositoryClass: EvenementRepository::class)]
+#[ORM\HasLifecycleCallbacks] // t9oul li doctrine li fama prepersist
 class Evenement
 {
     #[ORM\Id]
@@ -60,7 +61,7 @@ class Evenement
     #[Assert\NotNull(message: 'La date de fin est obligatoire.')]
     private ?\DateTime $dateFin = null;
 
-    #[Groups(['event:read'])]
+    #[Groups(['event:read', 'event:write'])]
     #[Assert\NotBlank(message: 'Le lieu ne peut pas être vide.')]
     #[ORM\Column(length: 255)]
     private ?string $lieu = null;
@@ -79,7 +80,7 @@ class Evenement
     #[ORM\Column(length: 30, enumType: Categorie::class)]
     private ?Categorie $categorie = null;
 
-    #[Groups(['event:read'])]
+    #[Groups(['event:read', 'event:write'])]
     #[ORM\Column(length: 20, enumType: StatutEvent::class)]
     private ?StatutEvent $status = null;
 
@@ -218,6 +219,7 @@ class Evenement
         return $this->dateCreation;
     }
 
+    #[ORM\PrePersist]
     public function setDateCreation(): static
     {
         $this->dateCreation = new \DateTime();
