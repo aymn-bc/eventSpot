@@ -8,6 +8,7 @@ use App\Form\EvenementType;
 use App\Form\InscriptionType;
 use App\Repository\EvenementRepository;
 use App\Service\EvenementManager;
+use App\Service\FileUploader;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -56,7 +57,7 @@ class EvenementController extends AbstractController
     // Créer un événement (AVANT detail !)
     #[IsGranted('ROLE_ORGANISATEUR')]
     #[Route('/evenements/nouveau', name: 'app_evenements_nouveau', methods: ['GET', 'POST'])]
-    public function nouveau(Request $request, EntityManagerInterface $em): Response
+    public function nouveau(Request $request, EntityManagerInterface $em, FileUploader $fileUploader): Response
     {
         $evenement = new Evenement();
         $form = $this->createForm(EvenementType::class, $evenement);
@@ -65,8 +66,7 @@ class EvenementController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $imageFile = $form->get('imageFile')->getData();
             if ($imageFile) {
-                $newFilename = uniqid() . '.' . $imageFile->getClientOriginalExtension();
-                $imageFile->move($this->getParameter('images_directory'), $newFilename);
+                $newFilename = $fileUploader->upload($imageFile);
                 $evenement->setImageName($newFilename);
             }
 
@@ -109,7 +109,7 @@ class EvenementController extends AbstractController
     // Modifier un événement
     #[IsGranted('ROLE_ORGANISATEUR')]
     #[Route('/evenements/{id}/modifier', name: 'app_evenements_modifier', methods: ['GET', 'POST'])]
-    public function modifier(Request $request, Evenement $evenement, EntityManagerInterface $em): Response
+    public function modifier(Request $request, Evenement $evenement, EntityManagerInterface $em, FileUploader $fileUploader): Response
     {
         $form = $this->createForm(EvenementType::class, $evenement);
         $form->handleRequest($request);
@@ -117,9 +117,11 @@ class EvenementController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $imageFile = $form->get('imageFile')->getData();
             if ($imageFile) {
-                $newFilename = uniqid() . '.' . $imageFile->getClientOriginalExtension();
-                $imageFile->move($this->getParameter('images_directory'), $newFilename);
-                $evenement->setImageName($newFilename);
+                $oldImageName = $evenement->getImageName();
+                if ($oldImageName) {
+                    $fileUploader->remove($oldImageName);
+                }
+                $evenement->setImageName($fileUploader->upload($imageFile));
             }
 
             if (!$evenement->getOrganisateur()) {
@@ -141,9 +143,14 @@ class EvenementController extends AbstractController
     // Supprimer un événement (CSRF)
     #[IsGranted('ROLE_ORGANISATEUR')]
     #[Route('/evenements/{id}/supprimer', name: 'app_evenements_supprimer', methods: ['POST'])]
-    public function supprimer(Request $request, Evenement $evenement, EntityManagerInterface $em): Response
+    public function supprimer(Request $request, Evenement $evenement, EntityManagerInterface $em, FileUploader $fileUploader): Response
     {
         if ($this->isCsrfTokenValid('delete' . $evenement->getId(), $request->request->get('_token'))) {
+            $imageName = $evenement->getImageName();
+            if ($imageName){
+                $fileUploader->remove($imageName);
+            }
+            
             $em->remove($evenement);
             $em->flush();
             $this->addFlash('success', 'Événement supprimé avec succès !');
