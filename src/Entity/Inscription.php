@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: InscriptionRepository::class)]
+#[ORM\UniqueConstraint(name: 'unique_inscription', columns: ['evenement_id', 'participant_id'])] // bech user me ynajamch y9ayed akther men mara 
 class Inscription
 {
     #[ORM\Id]

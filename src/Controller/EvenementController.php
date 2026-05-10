@@ -181,7 +181,13 @@ class EvenementController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            if ($this->evenementManager->estInscrit($this->getUser(), $evenement)) {
+                $this->addFlash('danger', 'Vous êtes déjà inscrit à cet événement.');
+                return $this->redirectToRoute('app_evenements_detail', ['id' => $evenement->getId()]);
+            }
+
             $inscription->setEvenement($evenement);
+            $inscription->setParticipant($this->getUser());
             $inscription->setDateInscription();
             $inscription->setStatus(StatutInscription::CONFIRMEE);
             $em->persist($inscription);

@@ -30,12 +30,34 @@
                 </li>
             </ul>
             <ul class="navbar-nav">
-    {% if is_granted('ROLE_ADMIN') %}
-    <li class="nav-item">
-        <a class="nav-link btn btn-success text-white px-3" href="{{ path('app_evenements_nouveau') }}">+ Nouvel événement</a>
-    </li>
-    {% endif %}
-</ul>
+                {% if is_granted('ROLE_ADMIN') %}
+                <li class="nav-item">
+                    <a class="nav-link btn btn-success text-white px-3" href="{{ path('app_evenements_nouveau') }}">+ Nouvel événement</a>
+                </li>
+                {% endif %}
+            </ul>
+            
+
+            <ul class="navbar-nav">
+    
+    {% if app.user %}
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                👤 {{ app.user.pseudo ?? app.user.email }}
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li><span class="dropdown-item-text text-muted small">{{ app.user.email }}</span></li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <a class="dropdown-item text-danger" href="{{ path('app_logout') }}">🚪 Déconnexion</a>
+                </li>
+            </ul>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-outline-light px-3 hover:text-black" href="{{ path('app_login') }}">🔑 Connexion</a>
+                    </li>
+                {% endif %}
+            </ul>
         </div>
     </div>
 </nav>
