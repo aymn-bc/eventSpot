@@ -16,24 +16,18 @@ class EvenementManager
 
     public function getPlacesRestantes(Evenement $e): int
     {
-        $inscrits = $this->inscRepo->count(['evenement' => $e]);
+        $inscrits = $this->inscRepo->countByEvenement($e);
         return max(0, $e->getCapaciteMax() - $inscrits);
     }
 
     public function estInscrit(User $u, Evenement $e): bool
     {
-        $inscriptions = $this->inscRepo->findBy(['evenement' => $e]);
-        foreach ($inscriptions as $inscription) {
-            if ($inscription->getParticipant()->contains($u)) {
-                return true;
-            }
-        }
-        return false;
+        return $this->inscRepo->findByEvenementAndUser($e, $u) !== null;
     }
 
     public function getNbInscrits(Evenement $e): int
     {
-        return $this->inscRepo->count(['evenement' => $e]);
+        return $this->inscRepo->countByEvenement($e);
     }
 
     public function getEvenementsParCategorie(): array

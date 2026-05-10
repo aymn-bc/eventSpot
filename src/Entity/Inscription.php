@@ -4,8 +4,6 @@ namespace App\Entity;
 
 use App\Enum\StatutInscription;
 use App\Repository\InscriptionRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -31,15 +29,11 @@ class Inscription
     #[ORM\ManyToOne(inversedBy: 'inscriptions')]
     private ?Evenement $evenement = null;
 
-    /**
-     * @var Collection<int, User>
-     */
-    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'inscription')]
-    private Collection $participant;
+    #[ORM\ManyToOne(inversedBy: 'inscriptions')]
+    private ?User $participant = null;
 
     public function __construct()
     {
-        $this->participant = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -91,27 +85,14 @@ class Inscription
         return $this;
     }
 
-    public function getParticipant(): Collection
+    public function getParticipant(): ?User
     {
         return $this->participant;
     }
 
-    public function addParticipant(User $participant): static
+    public function setParticipant(?User $participant): static
     {
-        if (!$this->participant->contains($participant)) {
-            $this->participant->add($participant);
-            $participant->setInscription($this);
-        }
-        return $this;
-    }
-
-    public function removeParticipant(User $participant): static
-    {
-        if ($this->participant->removeElement($participant)) {
-            if ($participant->getInscription() === $this) {
-                $participant->setInscription(null);
-            }
-        }
+        $this->participant = $participant;
         return $this;
     }
 }
