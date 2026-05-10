@@ -20,9 +20,9 @@ class Inscription
     private ?\DateTime $dateInscription = null;
 
     #[ORM\Column(length: 15, enumType: StatutInscription::class)]
-    private ?string $status = null;
+    private ?StatutInscription $status = null;
 
-    #[Assert\Length(max: 500,maxMessage: 'Le commentaire ne peut pas depasser {{ limit }} caractères.')]
+    #[Assert\Length(max: 500, maxMessage: 'Le commentaire ne peut pas dépasser {{ limit }} caractères.')]
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $commentaire = null;
 
@@ -30,7 +30,7 @@ class Inscription
     private ?Evenement $evenement = null;
 
     #[ORM\ManyToOne(inversedBy: 'inscriptions')]
-    private ?User $user = null;
+    private ?User $participant = null;
 
     public function __construct()
     {
@@ -49,19 +49,17 @@ class Inscription
     public function setDateInscription(): static
     {
         $this->dateInscription = new \DateTime();
-
         return $this;
     }
 
-    public function getStatus(): ?string
+    public function getStatus(): ?StatutInscription
     {
         return $this->status;
     }
 
-    public function setStatus(string $status): static
+    public function setStatus(StatutInscription $status): static
     {
         $this->status = $status;
-
         return $this;
     }
 
@@ -73,7 +71,6 @@ class Inscription
     public function setCommentaire(?string $commentaire): static
     {
         $this->commentaire = $commentaire;
-
         return $this;
     }
 
@@ -85,19 +82,17 @@ class Inscription
     public function setEvenement(?Evenement $evenement): static
     {
         $this->evenement = $evenement;
-
         return $this;
     }
 
-    public function getUser(): ?User
+    public function getParticipant(): ?User
     {
-        return $this->user;
+        return $this->participant;
     }
 
-    public function setUser(?User $user): static
+    public function setParticipant(?User $participant): static
     {
-        $this->user = $user;
-
+        $this->participant = $participant;
         return $this;
     }
 }
