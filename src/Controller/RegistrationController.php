@@ -8,13 +8,15 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 class RegistrationController extends AbstractController
 {
     #[Route('/register', name: 'app_register')]
-    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
+    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager, MailerInterface $mailer): Response
     {
         if ($this->getUser()) {
             return $this->redirectToRoute('app_accueil');
@@ -34,9 +36,22 @@ class RegistrationController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
-            // do anything else you need here, like send an email
+            // Send welcome email
+            $email = (new Email())
+                ->from('noreply@eventspot.com')
+                ->to($user->getUserIdentifier())
+                ->subject('🎉 Bienvenue sur EventSpot !')
+                ->html(
+                    $this->renderView('emails/welcome_registration.html.twig', [
+                        'email' => $user->getUserIdentifier(),
+                        'pseudo' => $user->getPseudo() ?? $user->getUserIdentifier(),
+                    ])
+                );
 
-            return $this->redirectToRoute('_profiler_home');
+            $mailer->send($email);
+
+            $this->addFlash('success', 'Inscription réussie ! Un email de bienvenue a été envoyé.');
+            return $this->redirectToRoute('app_accueil');
         }
 
         return $this->render('registration/register.html.twig', [
